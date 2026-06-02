@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History of English Mock Exam</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .option-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+        .correct {
+            background-color: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #166534 !important;
+        }
+        .incorrect {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+        /* Fade in animation */
+        .fade-in {
+            animation: fadeIn 0.4s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <main class="w-full max-w-3xl bg-white rounded-2xl shadow-xl overflow-hidden relative fade-in" id="app-container">
+        
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="p-10 text-center">
+            <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold mb-4">Ultimate History of English Exam</h1>
+            <p class="text-slate-500 mb-8 max-w-lg mx-auto">Units 1 - 5. This mock test contains 35 questions covering global spread, prehistoric roots, the Renaissance, standardization, and modern growth.</p>
+            <button id="start-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-colors shadow-md text-lg">
+                Start Exam
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden flex-col h-full">
+            <!-- Header & Progress -->
+            <div class="bg-slate-50 border-b border-slate-200 p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-sm font-semibold text-slate-500 uppercase tracking-wider" id="section-title">Section 1</span>
+                    <span class="text-sm font-bold text-blue-600 bg-blue-100 py-1 px-3 rounded-full" id="question-tracker">1 / 35</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Question Area -->
+            <div class="p-6 md:p-8 flex-grow">
+                <h2 id="question-text" class="text-xl md:text-2xl font-semibold mb-6 text-slate-800 leading-snug">
+                    Question text goes here?
+                </h2>
+                <div id="options-container" class="space-y-3">
+                    <!-- Options will be injected here via JS -->
+                </div>
+            </div>
+
+            <!-- Footer & Controls -->
+            <div class="bg-slate-50 border-t border-slate-200 p-6 flex justify-end">
+                <button id="next-btn" disabled class="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-8 rounded-xl transition-colors shadow-sm">
+                    Next Question
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="hidden p-8 md:p-12 text-center h-[80vh] overflow-y-auto">
+            <div id="score-icon" class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+                🏆
+            </div>
+            <h2 class="text-3xl font-bold mb-2">Exam Complete!</h2>
+            <p class="text-slate-500 mb-6" id="score-message">You scored X out of Y.</p>
+            
+            <div class="text-6xl font-bold mb-8" id="final-score">
+                100%
+            </div>
+
+            <button id="restart-btn" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 px-8 rounded-xl transition-colors shadow-md mb-10">
+                Retake Exam
+            </button>
+
+            <div class="text-left">
+                <h3 class="text-xl font-bold border-b pb-2 mb-4">Detailed Review</h3>
+                <div id="review-container" class="space-y-6 text-sm text-slate-600">
+                    <!-- Review items injected via JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Quiz Data - All 35 Questions
+        const quizData = [
+            // Section 1: Units 1 & 2
+            { section: "Units 1 & 2: Prehistoric Roots", q: "Which of the following is true regarding the number of English speakers globally?", options: ["There are exactly 1 billion native (L1) speakers.", "Foreign language speakers make up the smallest group of English learners.", "There are approximately 400 million second language (L2) speakers, matching or exceeding native speakers.", "English is an official language in only 15 countries."], a: 2 },
+            { section: "Units 1 & 2: Prehistoric Roots", q: "What major historical event physically facilitated the spread of English during the 18th and 19th centuries?", options: ["The creation of the Internet", "The Industrial Revolution in Britain", "The rise of the American Empire", "The fall of the Roman Empire"], a: 1 },
+            { section: "Units 1 & 2: Prehistoric Roots", q: "Historical linguists trace the origins of Proto-Indo-European (PIE) back to which ancient culture that lived in southern Russia around 5000 BCE?", options: ["The Celts", "The Romans", "The Anglo-Saxons", "The Kurgans"], a: 3 },
+            { section: "Units 1 & 2: Prehistoric Roots", q: "When the Anglo-Saxons invaded Britain in the 5th century CE, where did they push the native Celtic speakers?", options: ["To southern Russia and Anatolia", "To Kent and eastern Britain", "To Wales, Cornwall, and Brittany", "To Northumbria and Mercia"], a: 2 },
+            { section: "Units 1 & 2: Prehistoric Roots", q: "Which Anglo-Saxon kingdom was the dominant power during the 9th century?", options: ["Mercia", "Wessex", "Northumbria", "Jutland"], a: 1 },
+            
+            // Section 2: Unit 3
+            { section: "Unit 3: The Renaissance", q: "What primary technological invention caused a logistical crisis for Latin and accelerated the use of English as a language of learning?", options: ["The telegraph", "The radio", "Johannes Gutenberg's printing press", "The digital computer"], a: 2 },
+            { section: "Unit 3: The Renaissance", q: "During the 16th and 17th centuries, English expanded its vocabulary by borrowing roughly how many words?", options: ["2,500", "8,000", "30,000", "414,800"], a: 2 },
+            { section: "Unit 3: The Renaissance", q: "William Shakespeare heavily influenced Early Modern English. Roughly how many new words and expressions is he credited with inventing?", options: ["500", "2,000", "8,000", "30,000"], a: 1 },
+            { section: "Unit 3: The Renaissance", q: "What was King James I's primary motivation for commissioning a new translation of the Bible in 1603?", options: ["To unify the country with one official main translation.", "To introduce newly invented vocabulary words to the public.", "To force the Church to modernize its grammar.", "To replace English entirely with Latin."], a: 0 },
+            { section: "Unit 3: The Renaissance", q: "Which of the following best describes the linguistic style of the 1611 King James Bible?", options: ["It used highly modern slang and invented thousands of words.", "It used a massive vocabulary of over 42,000 words.", "It deliberately used old-fashioned language (like 'ye' and '-eth') and a limited vocabulary of 8,000 words.", "It was written entirely in French."], a: 2 },
+            { section: "Unit 3: The Renaissance", q: "What idiom from the King James Bible is used to describe a person who is very good, honest, reasonable, and humble?", options: ["By the skin of your teeth", "The apple of someone's eye", "The straight and narrow", "The salt of the earth"], a: 3 },
+            
+            { section: "Unit 3: Grammar & Sounds", q: "By the 17th century, which grammatical feature became much more common in English?", options: ["Dropping the word 'do' from all sentences.", "Using the auxiliary verb 'do' with a main verb (e.g., 'Do you know?').", "Changing all '-s' verb endings to '-eth'.", "Using 'thou' and 'thee' in everyday speech."], a: 1 },
+            { section: "Unit 3: Grammar & Sounds", q: "The Great Vowel Shift caused a massive change in English pronunciation. Which of the following is a direct result of this era?", options: ["Seven long vowels changed their pronunciation (e.g., /hu:s/ became /haus/).", "Short vowels were completely removed from the language.", "All words were forced to be spelled exactly as they sounded.", "The letters 't' and 'l' were added to the beginning of every word."], a: 0 },
+            
+            // Section 3: Unit 4
+            { section: "Unit 4: Bringing Order", q: "Why did scholars like Jonathan Swift panic and demand control over the English language in the early 18th century?", options: ["Because English was losing words to the invading Romans.", "Because the fastest growth of new words had just occurred and they feared the language was changing too quickly.", "Because the printing press had broken down.", "Because regional accents had disappeared."], a: 1 },
+            { section: "Unit 4: Bringing Order", q: "Why did Renaissance scholars deliberately insert silent letters into words like 'doubt' (adding a 'b') and 'people' (adding an 'o')?", options: ["To make the words easier for children to read.", "To match the new rules of the King James Bible.", "To visually indicate the word's ancient Latin origins.", "To charge more money for printing longer words."], a: 2 },
+            { section: "Unit 4: Bringing Order", q: "Published in 1604 by Robert Cawdrey, the very first English-English dictionary contained around 2,500 words and focused exclusively on:", options: ["Scientific terminology", "Hard words", "Regional slang", "Internet terminology"], a: 1 },
+            { section: "Unit 4: Bringing Order", q: "How long did it take Samuel Johnson to write his famous 1755 A Dictionary of the English Language?", options: ["3 years", "5 years", "9 years", "44 years"], a: 2 },
+            { section: "Unit 4: Bringing Order", q: "What was a major feature (and sometimes a flaw) of Samuel Johnson's 1755 dictionary?", options: ["It contained zero examples from literature.", "He included his own personal opinions in the definitions.", "He refused to include the pronunciation of words.", "It only contained 8,000 words."], a: 1 },
+            { section: "Unit 4: Bringing Order", q: "In the late 18th century, writers like Robert Lowth published highly strict 'prescriptive' grammar books. What language did they base their English grammar rules on?", options: ["Old English", "French", "Brythonic", "Latin"], a: 3 },
+            { section: "Unit 4: Bringing Order", q: "What major psychological and social effect did prescriptive grammar books have on first-language English speakers?", options: ["They made speakers feel incredibly proud of their local dialects.", "They caused many native speakers to feel ashamed and believe they spoke English 'incorrectly.'", "They successfully eliminated all regional accents in Britain.", "They convinced speakers to revert to using 'thou' and 'thee.'"], a: 1 },
+            { section: "Unit 4: Bringing Order", q: "When John Walker published his Critical Pronouncing Dictionary in 1791, whose accent did he choose as the absolute model of 'correct' pronunciation?", options: ["The educated class from London", "The working class from Wessex", "The Scottish royalty", "The American colonists"], a: 0 },
+            
+            // Section 4: Unit 5
+            { section: "Unit 5: Modern Growth", q: "By the 1800s, what was the structural state of the English language?", options: ["Grammar and pronunciation stabilized, but vocabulary continued to grow rapidly.", "Vocabulary stopped growing, but grammar rules changed daily.", "Both grammar and vocabulary completely stopped changing.", "English split into two entirely different languages."], a: 0 },
+            { section: "Unit 5: Modern Growth", q: "According to your text, in what year was the scientific word 'bronchitis' added to the English language?", options: ["1814", "1911", "1928", "1944"], a: 0 },
+            { section: "Unit 5: Modern Growth", q: "Taking an already existing word and giving it a completely new meaning is known as what process?", options: ["Clipping", "Blending", "Semantic change", "Neologism"], a: 2 },
+            { section: "Unit 5: Modern Growth", q: "What was the ultimate goal of the Oxford English Dictionary (OED)?", options: ["To list only the words invented by Samuel Johnson.", "To record every single word used in English since the year 1150, including dead words.", "To remove all regional and cant words from the English language.", "To translate English words into Latin."], a: 1 },
+            { section: "Unit 5: Modern Growth", q: "In 1879, James Murray was appointed director of the OED project. After 5 years of intense research, how far into the alphabet had his team completed?", options: ["From A to Z", "From A to M", "From A to ANT", "From A to B"], a: 2 },
+            { section: "Unit 5: Modern Growth", q: "How long did it ultimately take to complete the first edition of the Oxford English Dictionary (published in 1928)?", options: ["5 years", "10 years", "44 years", "100 years"], a: 2 },
+            { section: "Unit 5: Modern Growth", q: "Approximately what percentage of the 615,100 words in the 1989 Second Edition of the OED are no longer used today?", options: ["5%", "20%", "50%", "80%"], a: 1 },
+            { section: "Unit 5: Modern Growth", q: "How often are new words added to the online version of the OED today?", options: ["Every week", "Every three months", "Every year", "Every decade"], a: 1 },
+            { section: "Unit 5: Modern Growth", q: "What is Received Pronunciation (RP) fundamentally concerned with?", options: ["Grammar rules", "Spelling rules", "Pronunciation (Accent)", "Internet vocabulary"], a: 2 },
+            { section: "Unit 5: Modern Growth", q: "Why did the BBC originally adopt RP English for its newsreaders?", options: ["Because it was the most common working-class accent.", "Because it was considered an ideal, neutral, and standardized English for all of Britain.", "Because the government made it illegal to use any other accent.", "Because regional accents could not be picked up by early microphones."], a: 1 },
+            { section: "Unit 5: Modern Growth", q: "What linguistic shift occurred in Britain during the 1960s?", options: ["The BBC completely banned RP English.", "Social class differences broke down, and regional accents became much more accepted on television.", "All British citizens were forced to adopt American pronunciation.", "The internet was invented, ending the need for spoken English."], a: 1 },
+            { section: "Unit 5: Modern Growth", q: "Which of the following is an example of an entirely NEW vocabulary word created because of the Internet?", options: ["Surf", "Link", "Virtual", "Blog"], a: 3 },
+            { section: "Unit 5: Modern Growth", q: "Which of the following words is an example of an old word undergoing a 'semantic change' because of the Internet?", options: ["Cyberspace", "Website", "Chat", "Email"], a: 2 },
+            { section: "Unit 5: Modern Growth", q: "Which of the following is NOT a characteristic of the new informal Internet writing style?", options: ["Using single letters and numbers for words.", "Dropping capitalization and punctuation.", "Strict adherence to 18th-century prescriptive grammar rules.", "The use of emoticons and emojis."], a: 2 }
+        ];
+
+        // State Variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = []; // Store user selections to show in review
+
+        // DOM Elements
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const sectionTitle = document.getElementById('section-title');
+        const questionTracker = document.getElementById('question-tracker');
+        const progressBar = document.getElementById('progress-bar');
+
+        function startQuiz() {
+            welcomeScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            quizScreen.classList.add('flex');
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            // Reset state
+            nextBtn.disabled = true;
+            optionsContainer.innerHTML = '';
+            
+            const currentQuestion = quizData[currentQuestionIndex];
+            
+            // Update Headers
+            sectionTitle.textContent = currentQuestion.section;
+            questionTracker.textContent = `${currentQuestionIndex + 1} / ${quizData.length}`;
+            
+            // Update Progress Bar
+            const progress = ((currentQuestionIndex) / quizData.length) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Render Question
+            questionText.textContent = currentQuestion.q;
+
+            // Render Options
+            currentQuestion.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full text-left p-4 border-2 border-slate-200 rounded-xl bg-white hover:border-blue-300 font-medium text-slate-700 focus:outline-none";
+                btn.textContent = option;
+                
+                // Add click listener
+                btn.onclick = () => selectOption(btn, index, currentQuestion.a);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedBtn, selectedIndex, correctIndex) {
+            // Disable all buttons so user can't change answer
+            const buttons = optionsContainer.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+
+            const isCorrect = (selectedIndex === correctIndex);
+            
+            // Record answer for review screen
+            userAnswers.push({
+                question: quizData[currentQuestionIndex].q,
+                userAnswer: quizData[currentQuestionIndex].options[selectedIndex],
+                correctAnswer: quizData[currentQuestionIndex].options[correctIndex],
+                isCorrect: isCorrect
+            });
+
+            if (isCorrect) {
+                selectedBtn.classList.add('correct');
+                score++;
+            } else {
+                selectedBtn.classList.add('incorrect');
+                // Highlight the correct one
+                buttons[correctIndex].classList.add('correct');
+            }
+
+            // Enable Next Button
+            nextBtn.disabled = false;
+        }
+
+        function handleNext() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            quizScreen.classList.remove('flex');
+            resultsScreen.classList.remove('hidden');
+
+            // Final Progress Bar push to 100%
+            progressBar.style.width = `100%`;
+
+            const percentage = Math.round((score / quizData.length) * 100);
+            
+            document.getElementById('final-score').textContent = `${percentage}%`;
+            document.getElementById('score-message').textContent = `You scored ${score} out of ${quizData.length} correctly.`;
+            
+            const icon = document.getElementById('score-icon');
+            if(percentage >= 90) { icon.textContent = '👑'; icon.className = "w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl bg-yellow-100"; }
+            else if(percentage >= 70) { icon.textContent = '👍'; icon.className = "w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl bg-blue-100"; }
+            else { icon.textContent = '📚'; icon.className = "w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl bg-slate-100"; }
+
+            // Generate Review
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+
+            userAnswers.forEach((ans, idx) => {
+                const item = document.createElement('div');
+                item.className = "p-4 rounded-xl border " + (ans.isCorrect ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200");
+                
+                item.innerHTML = `
+                    <p class="font-bold text-slate-800 mb-2">${idx + 1}. ${ans.question}</p>
+                    <p class="mb-1"><span class="font-semibold">Your Answer:</span> <span class="${ans.isCorrect ? 'text-green-700' : 'text-red-600 line-through'}">${ans.userAnswer}</span></p>
+                    ${!ans.isCorrect ? `<p class="text-green-700"><span class="font-semibold">Correct Answer:</span> ${ans.correctAnswer}</p>` : ''}
+                `;
+                reviewContainer.appendChild(item);
+            });
+        }
+
+        // Event Listeners
+        startBtn.addEventListener('click', startQuiz);
+        nextBtn.addEventListener('click', handleNext);
+        restartBtn.addEventListener('click', startQuiz);
+
+    </script>
+</body>
+</html>
